@@ -24,10 +24,10 @@ http://www.springframework.org/schema/websocket http://www.springframework.org/s
      <bean id="androidwebsocket" class="com.hxh.websocket.handler.AndroidEndPoint"/>
     <websocket:handlers>
         <websocket:mapping path="/websocket" handler="websocket"/>
-        <websocket:mapping path="/androidwebsocket" handler="androidwebsocket"/>
-        <websocket:handshake-interceptors>  
+        <websocket:mapping path="/androidwebsocket" handler="androidwebsocket" />
+        <!--<websocket:handshake-interceptors>  
             <bean class="com.hxh.websocket.HandshakeInterceptor"/>
-        </websocket:handshake-interceptors>
+        </websocket:handshake-interceptors>-->
     </websocket:handlers>
     <mvc:annotation-driven>
 		<mvc:message-converters register-defaults="true">

@@ -29,10 +29,17 @@ public class HandshakeInterceptor extends HttpSessionHandshakeInterceptor{
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
             WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         System.out.println("Before Handshake");
+        
         System.out.println(request.getHeaders().toString());
         System.out.println("请求地址:"+request.getURI());
         System.out.println("请求内容:"+request.getBody());
+        
+        System.out.println("s:"+wsHandler.supportsPartialMessages());
+        System.out.println("server response:" + response.getHeaders()+" body :" + response.getBody());
         return super.beforeHandshake(request, response, wsHandler, attributes);
+        
+        
+        
     }
     
 }
