@@ -7,7 +7,6 @@
 package com.hxh.websocket.beans;
 
 import java.util.Date;
-import org.springframework.web.socket.WebSocketSession;
 
 /**
  *
@@ -21,7 +20,6 @@ public class User {
     private Date lastLoginTime;
     private String driveName;
     private String driveversion;
-    private WebSocketSession session;
     
     public User(){
         
@@ -35,16 +33,15 @@ public class User {
      * @param port 视频流端口
      * @param driveName 设备名称
      * @param driveversion 版本
-     * @param session WebSocketSession
      */
-    public User(String name, String pass, String addr, String port, String driveName, String driveversion, WebSocketSession session) {
+    public User(String name, String pass, String addr, String port, String driveName, String driveversion) {
         this.name = name;
         this.pass = pass;
         this.addr = addr;
         this.port = port;
         this.driveName = driveName;
         this.driveversion = driveversion;
-        this.session = session;
+        
         this.lastLoginTime = new Date();
     }
 
@@ -148,19 +145,7 @@ public class User {
         this.driveversion = driveversion;
     }
 
-    /**
-     * @return the WebSocketSession
-     */
-    public WebSocketSession getSession() {
-        return session;
-    }
-
-    /**
-     * @param session the WebSocketSession to set
-     */
-    public void setSession(WebSocketSession session) {
-        this.session = session;
-    }
+   
     
     /**
      * 更新用户状态
@@ -168,18 +153,15 @@ public class User {
      * @param port 视频流端口
      * @param driveName 设备名称
      * @param driveversion 设备版本
-     * @param session WebSocketSession
      */
     public void update(String addr, 
             String port, 
             String driveName, 
-            String driveversion, 
-            WebSocketSession session){
+            String driveversion){
         this.addr = addr;
         this.port = port;
         this.driveName = driveName;
         this.driveversion = driveversion;
-        this.session = session;
         this.lastLoginTime = new Date();
     }
 }

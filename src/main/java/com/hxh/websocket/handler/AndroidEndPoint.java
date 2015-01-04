@@ -10,6 +10,10 @@ import com.hxh.websocket.beans.JsonMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.websocket.service.UserOnlineService;
 import com.hxh.utils.JacksonMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -22,19 +26,22 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
  */
 public class AndroidEndPoint extends TextWebSocketHandler{
     
+    private final static boolean DEBUG = false;
+    
     @Autowired
     UserOnlineService service;
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("已关闭"+getClientAddress(session)+"的websocket。代码:"+
-                status.getCode()+"原因："+status.getReason());
+        //System.out.println("已关闭"+getClientAddress(session)+"的websocket。代码:"+
+                //status.getCode()+"原因："+status.getReason());
+        System.out.println("关闭");
         super.afterConnectionClosed(session, status);
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        System.out.println("来自"+getClientAddress(session)+"的websocket传输出现错误。");
+        
         super.handleTransportError(session, exception);
     }
 
@@ -54,28 +61,24 @@ public class AndroidEndPoint extends TextWebSocketHandler{
         }
         
         int command = jm.getC();
-        
         if(command == JsonMessage.USER_LOGIN){
             //JsonMessage msg = jm;
-            //doUserLogin(session,msg.getD(String[].class));
+            doUserLogin(session,jm.getD(ArrayList.class));
         }else if(command == JsonMessage.USER_LOGOUT ){
             //JsonMessage msg = jm;
-            //doUserLogout(session,msg.getD(String.class));
+            doUserLogout(session,jm.getD(String.class));
         }
-        
-        System.out.println("the client say:"+ message.getPayload());
-        TextMessage tsg = new TextMessage("I'm good 3Q");
-        
-        session.sendMessage(tsg);
         
         super.handleTextMessage(session, message);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String clientAddress = getClientAddress(session);
-        System.out.println("已建立"+clientAddress+"的websocket。");
+        //String clientAddress = getClientAddress(session);
+        //System.out.println("已建立"+clientAddress+"的websocket。");
+        System.out.println("连接");
         super.afterConnectionEstablished(session);
+        
     }
     
     private String getClientAddress(WebSocketSession session){
@@ -84,11 +87,18 @@ public class AndroidEndPoint extends TextWebSocketHandler{
         return s+":"+cp;
     }
     
-    private void doUserLogin(WebSocketSession session,String[] upp){
+    private void doUserLogin(WebSocketSession session,ArrayList<String> upp){
         //String clientAddress = getClientAddress(session);
-        if(upp!=null && upp.length==5){
-            String clientIp = session.getRemoteAddress().getHostName();
-            service.registerUser(upp[0], upp[1],clientIp, upp[2],upp[3],upp[4],session);
+        if(upp!=null && upp.size()==5){
+            String clientIp = session.getRemoteAddress().getHostString();
+            service.registerUser(upp.get(0), upp.get(1),clientIp, upp.get(2),upp.get(3),upp.get(4),session);
+        }
+        
+        try {
+            JsonMessage jm = new JsonMessage(JsonMessage.LOGIN_SUCCESS,null);
+            session.sendMessage(new TextMessage(jm.toJson()));
+        } catch (IOException ex) {
+            Logger.getLogger(AndroidEndPoint.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

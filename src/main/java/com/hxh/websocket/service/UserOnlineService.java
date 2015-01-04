@@ -12,8 +12,10 @@ import com.hxh.websocket.beans.JsonMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
@@ -27,32 +29,27 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 public class UserOnlineService {
     
+    private final boolean DEBUG = true;
+    
     //后台监控端消息推送列表
     final List<WebSocketSession> sessions =  Collections.synchronizedList(new LinkedList<WebSocketSession>()) ;
     
     //智能移动客户端在线列表
-    final List<User> users = Collections.synchronizedList(new LinkedList<User>());
+    final Map<String, User> users = Collections.synchronizedMap(new HashMap<String, User>());
     
     public UserOnlineService(){
         
     }
     
     public User addUser(User user){
-       users.add(user);
+       users.put(user.getName(), user);
        return user;
     }
     
     public void removeUser(String name){
         User ruser = null;
         //在遍历时需手工同步
-        synchronized(users){
-            for (User user : users) {
-                if(user.getName().equals(name)){
-                    ruser = user;
-                    break;
-                }
-            }
-        }
+        
         users.remove(ruser);
         JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGOUT);
@@ -81,11 +78,10 @@ public class UserOnlineService {
                     addr, 
                     port, 
                     driveName,
-                    driveversion,
-                    session);
+                    driveversion);
             ruser = addUser(user);
         }else{
-            ruser.update(addr, port, driveName, driveversion, session);
+            ruser.update(addr, port, driveName, driveversion);
         }
         
         JsonMessage msg = new JsonMessage();
@@ -97,15 +93,7 @@ public class UserOnlineService {
     
     private User findUserbyName(String name){
         //在遍历时需手工同步
-        synchronized(users){
-            for (User user : users) {
-                if(user.getName().equals(name)){
-                    return user;
-                }
-            }
-        }
-        
-        return null;
+        return users.get(name);
     }
     
     /**
