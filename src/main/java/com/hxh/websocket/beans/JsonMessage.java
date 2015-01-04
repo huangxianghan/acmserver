@@ -9,9 +9,8 @@ package com.hxh.websocket.beans;
 /**
  * 定义json消息格式
  * @author 黄香翰
- * @param <E> 消息数据的类型
  */
-public class JsonMessage<E> {
+public class JsonMessage {
     
     public static final int USER_LOGIN = 1;//用户登入
 
@@ -27,13 +26,13 @@ public class JsonMessage<E> {
     
     private int c;//命令
     
-    private E d;//数据
+    private Object d;//数据
     
     public JsonMessage(){
         
     }
     
-    public JsonMessage(int v,int c,E d){
+    public JsonMessage(int v,int c,Object d){
         this.v = v;
         this.c = c;
         this.d = d;
@@ -70,14 +69,18 @@ public class JsonMessage<E> {
     /**
      * @return 数据
      */
-    public E getD() {
+    public Object getD() {
         return d;
     }
 
     /**
      * @param d 数据
      */
-    public void setD(E d) {
+    public void setD(Object d) {
         this.d = d;
+    }
+    
+    public <T> T getD(Class<T> classType){
+	return classType.cast(d);
     }
 }

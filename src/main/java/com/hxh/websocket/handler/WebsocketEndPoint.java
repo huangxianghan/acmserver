@@ -6,11 +6,8 @@
 
 package com.hxh.websocket.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hxh.websocket.beans.User;
+
 import com.hxh.websocket.service.UserOnlineService;
-import java.io.StringWriter;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;

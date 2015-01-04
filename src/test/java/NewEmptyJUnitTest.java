@@ -56,7 +56,7 @@ public class NewEmptyJUnitTest {
             user.setPort("8086");
             user.setPass("*");
             user.setLastLoginTime(new Date());
-            JsonMessage<User> cmm = new JsonMessage<>();
+            JsonMessage cmm = new JsonMessage();
             cmm.setC(JsonMessage.USER_LOGIN);
             cmm.setD(user);
             ObjectMapper mapper = new ObjectMapper();

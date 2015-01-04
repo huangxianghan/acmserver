@@ -43,16 +43,30 @@ public class AndroidEndPoint extends TextWebSocketHandler{
         
         
         ObjectMapper om = JacksonMapper.getInstance();
-        JsonMessage jm =om.readValue(message.getPayload(), JsonMessage.class);
+        JsonMessage jm = null;
+        try{
+            jm =om.readValue(message.getPayload(), JsonMessage.class);
+        }catch(Exception e){
+            TextMessage tsg = new TextMessage(e.toString());
+            session.sendMessage(tsg);
+            e.printStackTrace();
+            return;
+        }
+        
         int command = jm.getC();
         
         if(command == JsonMessage.USER_LOGIN){
-            JsonMessage<String[]> msg = jm;
-            doUserLogin(session,msg.getD());
+            //JsonMessage msg = jm;
+            //doUserLogin(session,msg.getD(String[].class));
         }else if(command == JsonMessage.USER_LOGOUT ){
-            JsonMessage<String> msg = jm;
-            doUserLogout(session,msg.getD());
+            //JsonMessage msg = jm;
+            //doUserLogout(session,msg.getD(String.class));
         }
+        
+        System.out.println("the client say:"+ message.getPayload());
+        TextMessage tsg = new TextMessage("I'm good 3Q");
+        
+        session.sendMessage(tsg);
         
         super.handleTextMessage(session, message);
     }
@@ -61,7 +75,7 @@ public class AndroidEndPoint extends TextWebSocketHandler{
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String clientAddress = getClientAddress(session);
         System.out.println("已建立"+clientAddress+"的websocket。");
-        super.afterConnectionEstablished(session); 
+        super.afterConnectionEstablished(session);
     }
     
     private String getClientAddress(WebSocketSession session){

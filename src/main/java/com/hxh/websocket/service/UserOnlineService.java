@@ -12,7 +12,6 @@ import com.hxh.websocket.beans.JsonMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +54,7 @@ public class UserOnlineService {
             }
         }
         users.remove(ruser);
-        JsonMessage<String> msg = new JsonMessage();
+        JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGOUT);
         msg.setD(ruser.getName());
         pushMessageToWebClient(msg);
@@ -89,7 +88,7 @@ public class UserOnlineService {
             ruser.update(addr, port, driveName, driveversion, session);
         }
         
-        JsonMessage<User> msg = new JsonMessage();
+        JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGIN);
         msg.setD(ruser);
         
