@@ -7,6 +7,7 @@
 package com.hxh.websocket.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hxh.websocket.beans.Client;
 import com.hxh.websocket.beans.User;
 import com.hxh.websocket.beans.JsonMessage;
 import java.io.IOException;
@@ -35,30 +36,25 @@ public class UserOnlineService {
     final List<WebSocketSession> sessions =  Collections.synchronizedList(new LinkedList<WebSocketSession>()) ;
     
     //智能移动客户端在线列表
-    final Map<String, User> users = Collections.synchronizedMap(new HashMap<String, User>());
+    final Map<String, Client> users = Collections.synchronizedMap(new HashMap<String, Client>());
     
     public UserOnlineService(){
         
     }
     
-    public User addUser(User user){
-       users.put(user.getName(), user);
-       return user;
+    public void addClient(Client client){
+       users.put(client.getUser().getName(), client);
     }
     
-    public void removeUser(String name){
-        User ruser = null;
-        //在遍历时需手工同步
-        
-        users.remove(ruser);
+    public void removeClient(String name){
+        users.remove(name);
         JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGOUT);
-        msg.setD(ruser.getName());
+        msg.setD(name);
         pushMessageToWebClient(msg);
-        
     }
     
-    public void registerUser(String name,
+    public boolean registerClient(String name,
             String pass,
             String addr,
             String port,
@@ -67,32 +63,33 @@ public class UserOnlineService {
             WebSocketSession session){
         
         if(name==null || name.equals("")){
-            return;
+            return false;
         }
         
-        User ruser = findUserbyName(name);
+        Client currClient = findClientbyName(name);
         
-        if(ruser==null){
+        if(currClient==null){
             User user = new User(name, 
                     pass, 
                     addr, 
                     port, 
                     driveName,
                     driveversion);
-            ruser = addUser(user);
+            currClient = new Client(user, session);
+            addClient(currClient);
         }else{
-            ruser.update(addr, port, driveName, driveversion);
+            currClient.updateUser(addr, port, driveName, driveversion);
         }
         
         JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGIN);
-        msg.setD(ruser);
+        msg.setD(currClient.getUser());
         
         pushMessageToWebClient(msg);
+        return true;
     }
     
-    private User findUserbyName(String name){
-        //在遍历时需手工同步
+    private Client findClientbyName(String name){
         return users.get(name);
     }
     
@@ -102,9 +99,7 @@ public class UserOnlineService {
      * @param s 
      */
     public void registerSession(WebSocketSession s){
-        System.out.println("注册ws_session");
         sessions.add(s);
-        System.out.println("共有:"+sessions.size());
     }
     
     /**
@@ -121,8 +116,6 @@ public class UserOnlineService {
      * @param msg 
      */
     private void pushMessageToWebClient(JsonMessage msg){
-        System.out.println("开始推送");
-        System.out.println("共有:"+sessions.size());
         synchronized(sessions){
             for(WebSocketSession s : sessions){
                 ObjectMapper mapper = new ObjectMapper();
@@ -130,7 +123,6 @@ public class UserOnlineService {
                 try {
                     mapper.writeValue(sw, msg);
                     String jsonmsg = sw.toString();
-                    System.out.println("推送:"+jsonmsg);
                     s.sendMessage(new TextMessage(jsonmsg));
                 } catch (IOException ex) {
                     Logger.getLogger(UserOnlineService.class.getName()).log(Level.SEVERE, null, ex);
