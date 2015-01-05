@@ -23,6 +23,8 @@ var id =0;
         if(msg.c==1){
             var data = msg.d;
             addDrive(data.addr,'就绪',data.name,data.lastLoginTime);
+        }else if(msg.c==2){
+            removeDrive(msg.d);
         }
     };
 })(jQuery);
@@ -88,16 +90,15 @@ function addDrive(ip,state,name,lastLoginTime){
         
         $("#drivelist").append(trhtml);
         orderByXh();
-    }
-    
-    
-    function removeDrive(rowid){
-        $("#"+rowid).remove();
-        orderByXh();
-    }
-    
-    function orderByXh(){
-        $(".drivelist_xh").each(function(i){
-            $(this).html(i+1);
-        });
-    }
+}
+
+function removeDrive(rowid){
+    $("#"+rowid).remove();
+    orderByXh();
+}
+
+function orderByXh(){
+    $(".drivelist_xh").each(function(i){
+        $(this).html(i+1);
+    });
+}

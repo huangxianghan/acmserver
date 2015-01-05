@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.hxh.websocket.beans;
+package com.hxh.websocket;
 
 import org.springframework.web.socket.WebSocketSession;
 

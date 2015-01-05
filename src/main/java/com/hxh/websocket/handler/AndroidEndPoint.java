@@ -6,7 +6,7 @@
 
 package com.hxh.websocket.handler;
 
-import com.hxh.websocket.beans.JsonMessage;
+import com.hxh.websocket.JsonMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.websocket.service.UserOnlineService;
 import com.hxh.utils.JacksonMapper;

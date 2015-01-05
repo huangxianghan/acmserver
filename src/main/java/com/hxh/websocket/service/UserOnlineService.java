@@ -7,9 +7,9 @@
 package com.hxh.websocket.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hxh.websocket.beans.Client;
-import com.hxh.websocket.beans.User;
-import com.hxh.websocket.beans.JsonMessage;
+import com.hxh.websocket.Client;
+import com.hxh.websocket.User;
+import com.hxh.websocket.JsonMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;

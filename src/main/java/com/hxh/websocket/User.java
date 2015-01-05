@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.hxh.websocket.beans;
+package com.hxh.websocket;
 
 import java.util.Date;
 
