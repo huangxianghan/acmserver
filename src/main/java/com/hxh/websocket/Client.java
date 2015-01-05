@@ -41,6 +41,12 @@ public class Client {
         return session;
     }
     
-    
+    /**
+     * 获取sessionid
+     * @return 
+     */
+    public String getSessionId(){
+        return session.getId();
+    }
     
 }
