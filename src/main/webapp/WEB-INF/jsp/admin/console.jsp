@@ -9,7 +9,7 @@ String resourcesPath = basePath+"resources/";
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Amaze UI Admin table Examples</title>
+  <title>视频监控后台管理</title>
   <meta name="description" content="这是一个 table 页面">
   <meta name="keywords" content="table">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -57,7 +57,7 @@ String resourcesPath = basePath+"resources/";
   <!-- sidebar start -->
   <div class="admin-sidebar">
     <ul class="am-list admin-sidebar-list">
-      <li><a href="console/home"><span class="am-icon-home"></span> 首页</a></li>
+      <li><a href="home"><span class="am-icon-home"></span> 首页</a></li>
       
       <li><a href="#"><span class="am-icon-sign-out"></span> 注销</a></li>
     </ul>
@@ -65,14 +65,14 @@ String resourcesPath = basePath+"resources/";
     <div class="am-panel am-panel-default admin-sidebar-panel">
       <div class="am-panel-bd">
         <p><span class="am-icon-bookmark"></span> 消息</p>
-        <p>时光静好，与君语；细水流年，与君同。—— Amaze UI</p>
+        <p id="p_msg" >时光静好，与君语；细水流年，与君同。</p>
       </div>
     </div>
 
     <div class="am-panel am-panel-default admin-sidebar-panel">
       <div class="am-panel-bd">
         <p><span class="am-icon-tag"></span> 状态</p>
-        <p>Welcome to the Amaze UI wiki!</p>
+        <p id="p_status" ></p>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@ String resourcesPath = basePath+"resources/";
         <div class="am-fl am-cf">
           <div class="am-btn-toolbar am-fl">
             <div class="am-btn-group am-btn-group-xs">
-              <button type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
+              <button type="button" class="am-btn am-btn-default" ><span class="am-icon-plus"></span> 新增</button>
               <button type="button" class="am-btn am-btn-default"><span class="am-icon-trash-o"></span> 断开</button>
             </div>
           </div>
@@ -138,8 +138,8 @@ String resourcesPath = basePath+"resources/";
           </tbody>
         </table>
           <div class="am-cf">
- 共 15 条记录
-  <div class="am-fr">
+              共 <span id="s_count">0</span> 条记录
+  <!--<div class="am-fr">
     <ul class="am-pagination">
       <li class="am-disabled"><a href="#">«</a></li>
       <li class="am-active"><a href="#">1</a></li>
@@ -149,7 +149,7 @@ String resourcesPath = basePath+"resources/";
       <li><a href="#">5</a></li>
       <li><a href="#">»</a></li>
     </ul>
-  </div>
+  </div>-->
   
 </div>
           <hr />
@@ -166,6 +166,9 @@ String resourcesPath = basePath+"resources/";
   <hr>
   <p class="am-padding-left">© 2014 AllMobilize, Inc. Licensed under MIT license.</p>
 </footer>
+
+
+
 
 <!--[if lt IE 9]>
 <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>

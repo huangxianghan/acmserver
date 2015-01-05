@@ -20,6 +20,7 @@ public class User {
     private Date lastLoginTime;
     private String driveName;
     private String driveversion;
+    private String sessionId;
     
     public User(){
         
@@ -34,14 +35,14 @@ public class User {
      * @param driveName 设备名称
      * @param driveversion 版本
      */
-    public User(String name, String pass, String addr, String port, String driveName, String driveversion) {
+    public User(String name, String pass, String addr, String port, String driveName, String driveversion,String sessionId) {
         this.name = name;
         this.pass = pass;
         this.addr = addr;
         this.port = port;
         this.driveName = driveName;
         this.driveversion = driveversion;
-        
+        this.sessionId = sessionId;
         this.lastLoginTime = new Date();
     }
 
@@ -144,8 +145,14 @@ public class User {
     public void setDriveversion(String driveversion) {
         this.driveversion = driveversion;
     }
+    
+    public void setSessionId(String sessionId){
+        this.sessionId = sessionId;
+    }
 
-   
+    public String getSessionId(){
+        return sessionId;
+    }
     
     /**
      * 更新用户状态

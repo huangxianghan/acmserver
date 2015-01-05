@@ -36,6 +36,7 @@ public class AndroidEndPoint extends TextWebSocketHandler{
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("已关闭"+getClientAddress(session)+"的websocket。代码:"+
                 status.getCode()+"原因："+status.getReason());
+        service.removeClient(session.getId());
         super.afterConnectionClosed(session, status);
     }
 

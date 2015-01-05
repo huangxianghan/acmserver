@@ -1,5 +1,5 @@
 var ws = null;
-var id =0;
+var usercount = 0;
 (function($) {
   'use strict';
 
@@ -10,27 +10,42 @@ var id =0;
       $.AMUI.fullscreen.isFullscreen ? $fullText.text('关闭全屏') : $fullText.text('开启全屏');
     });
   });
-  ws =new WebSocket(websocketUrl);
-  ws.onopen = function () {
-      log('websocket connection success');
-  };
-  ws.onclose = function (event) {  
-       log('websocket connection closed.');
-       log(event);
-   };
-    ws.onmessage = function (event) {  
-        var msg = eval("("+event.data+")");
-        if(msg.c==1){
-            var data = msg.d;
-            addDrive(data.addr,'就绪',data.name,data.lastLoginTime);
-        }else if(msg.c==2){
-            removeDrive(msg.d);
-        }
-    };
+  webSocketStart();
 })(jQuery);
 
-function log(msg){
+function webSocketStart(){
+    ws =new WebSocket(websocketUrl);
+    
+    ws.onopen = function(){
+        log('#p_status','服务器已连接。');
+    };
+    
+    ws.onclose = function(event){
+        log('#p_status','服务器已关闭。');
+    }
+    
+    ws.onmessage = function(event){
+        var msg = eval("("+event.data+")");
+        if(msg.c==1){
+            usercount++;
+            $("#s_count").html(usercount);
+            var data = msg.d;
+            addDrive(data.sessionId,data.addr,'就绪',data.name,data.port,data.lastLoginTime);
+            log('#p_msg', '用户：'+data.name+'已连接。');
+        }else if(msg.c==2){
+            usercount--;
+            $("#s_count").html(usercount);
+            var name = $('#row_'+msg.d + ' td:eq(4)').text();
+            removeDrive(msg.d);
+            log('#p_msg', name+'已断开连接。');
+        }
+    }
+}
 
+function log(tag,msg){
+    var d = new Date();
+    var formatdate= d.Format("yyyy-M-d h:m:s");
+    $(tag).html(formatdate + '&nbsp;' +msg);
 }
 
 function disconnect() {  
@@ -47,7 +62,7 @@ function disconnect() {
 // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423 
 // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18 
 Date.prototype.Format = function(fmt) 
-{ //author: meizz 
+{ 
   var o = { 
     "M+" : this.getMonth()+1,                 //月份 
     "d+" : this.getDate(),                    //日 
@@ -73,27 +88,26 @@ Date.prototype.Format = function(fmt)
  * @param {type} name 名字
  * @returns {undefined} 无返回值
  */
-function addDrive(ip,state,name,lastLoginTime){
-        id++;
+function addDrive(sessionId,ip,state,name,port,lastLoginTime){
         var d = new Date(lastLoginTime);
         var formatdate= d.Format("yyyy年M月d日 h:m:s");
-        var trhtml = '<tr id="row_'+name+'" ><td><input type="checkbox" /></td>';
+        var trhtml = '<tr id="row_'+sessionId+'" ><td><input type="checkbox" /></td>';
         trhtml += "<td class='drivelist_xh' ></td>";
         trhtml += "<td>"+ip+"</td>";
         trhtml +="<td>"+state+"</td>";
         trhtml +="<td>"+name+"</td>";
         trhtml +="<td>"+formatdate+"</td>";
         trhtml+='<td><div class="am-btn-toolbar"><div class="am-btn-group am-btn-group-xs">';
-        trhtml += '<button class="am-btn am-btn-default  am-text-secondary"><span class="am-icon-pencil-square-o"></span> 查看</button>';
-        trhtml +='<button onclick="removeDrive(\'row_'+name+'\')" class="am-btn am-btn-default  am-text-danger"><span class="am-icon-trash-o"></span> 断开</button>';
-        trhtml += '</div></div></td>';
+        trhtml += '<button class="am-btn am-btn-default  am-text-secondary" onclick=openWin("'+ip+'",'+port+') ><span class="am-icon-pencil-square-o"></span> 查看</button>';
+        trhtml +='<button onclick="removeDrive(\'row_'+sessionId+'\')" class="am-btn am-btn-default  am-text-danger"><span class="am-icon-trash-o"></span> 断开</button>';
+        trhtml += '</div></div></td></tr>';
         
         $("#drivelist").append(trhtml);
         orderByXh();
 }
 
 function removeDrive(rowid){
-    $("#"+rowid).remove();
+    $("#row_"+rowid).remove();
     orderByXh();
 }
 
@@ -101,4 +115,8 @@ function orderByXh(){
     $(".drivelist_xh").each(function(i){
         $(this).html(i+1);
     });
+}
+
+function openWin(ip,port){
+    var uri = "rtsp://"+ ip +":" + prot;
 }

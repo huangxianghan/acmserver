@@ -7,6 +7,7 @@
 package com.hxh.websocket.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hxh.utils.JacksonMapper;
 import com.hxh.websocket.Client;
 import com.hxh.websocket.User;
 import com.hxh.websocket.JsonMessage;
@@ -17,8 +18,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -43,17 +42,32 @@ public class UserOnlineService {
     }
     
     public void addClient(Client client){
-       users.put(client.getUser().getName(), client);
+       users.put(client.getSessionId(), client);
     }
     
-    public void removeClient(String name){
-        users.remove(name);
+    /**
+     * 从智能移动客户端在线列表中删除客户端，并通知所有观察者
+     * @param sessionid 
+     */
+    public void removeClient(String sessionid){
+        users.remove(sessionid);
         JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGOUT);
-        msg.setD(name);
+        msg.setD(sessionid);
         pushMessageToWebClient(msg);
     }
     
+    /**
+     * 将客户端添加到智能移动客户端在线列表，通知所有观察者
+     * @param name
+     * @param pass
+     * @param addr
+     * @param port
+     * @param driveName
+     * @param driveversion
+     * @param session
+     * @return 
+     */
     public boolean registerClient(String name,
             String pass,
             String addr,
@@ -66,20 +80,17 @@ public class UserOnlineService {
             return false;
         }
         
-        Client currClient = findClientbyName(name);
-        
-        if(currClient==null){
-            User user = new User(name, 
-                    pass, 
-                    addr, 
-                    port, 
-                    driveName,
-                    driveversion);
-            currClient = new Client(user, session);
-            addClient(currClient);
-        }else{
-            currClient.updateUser(addr, port, driveName, driveversion);
-        }
+        User user = new User(name, 
+                pass, 
+                addr, 
+                port, 
+                driveName,
+                driveversion,
+                session.getId()
+        );
+        Client currClient = new Client(user, session);
+        addClient(currClient);
+       
         
         JsonMessage msg = new JsonMessage();
         msg.setC(JsonMessage.USER_LOGIN);
@@ -89,8 +100,9 @@ public class UserOnlineService {
         return true;
     }
     
-    private Client findClientbyName(String name){
-        return users.get(name);
+    
+    private Client findClientbyName(String sessionId){
+        return users.get(sessionId);
     }
     
     /**
@@ -115,18 +127,18 @@ public class UserOnlineService {
      * 向所有在消息推送列表中的WebSocketSession发送消息。
      * @param msg 
      */
-    private void pushMessageToWebClient(JsonMessage msg){
+    private void pushMessageToWebClient(JsonMessage msg) {
+        ObjectMapper mapper = JacksonMapper.getInstance();
+        StringWriter sw = new StringWriter();
+        try {
+            mapper.writeValue(sw, msg);
+        } catch (IOException ex) { return; }
+        String jsonmsg = sw.toString();
         synchronized(sessions){
             for(WebSocketSession s : sessions){
-                ObjectMapper mapper = new ObjectMapper();
-                StringWriter sw = new StringWriter();
                 try {
-                    mapper.writeValue(sw, msg);
-                    String jsonmsg = sw.toString();
                     s.sendMessage(new TextMessage(jsonmsg));
-                } catch (IOException ex) {
-                    Logger.getLogger(UserOnlineService.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                } catch (IOException ex) {}
             }
         }
     }
